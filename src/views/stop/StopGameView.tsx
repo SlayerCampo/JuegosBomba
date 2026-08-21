@@ -6,7 +6,7 @@ import { STOP_CATEGORIES, type CategoryKey } from '@/types/stop';
 import { escapeHTML } from '@/utils/textUtils';
 
 export function StopGameView() {
-  const { gameState, stopTriggeredBy, setStopTriggeredBy, dispatchLocalMessage } = useStopFlow();
+  const { gameState, stopTriggeredBy, dispatchLocalMessage } = useStopFlow();
   const { isHost, send, myId } = useNetwork();
   const { timeLeft, start, stop, isExpired } = useGameTimer();
 

@@ -199,7 +199,7 @@ function buildBoomState(
   const numPlayers    = state.playerOrder.length;
   const nextRound     = computeRound(nextTurnCount, numPlayers);
   const nextIdx       = findNextAliveIndex(state.playerOrder, players, state.activePlayerIndex);
-  const nextLetter    = computeNextLetter({ ...state, players }, nextRound, availableLetters);
+  const nextLetter    = computeNextLetter(state, nextRound, availableLetters);
   const duration      = getTurnDuration(state.mode, nextRound);
   const now           = Date.now();
   const turnStartTime = now + TRANSITION_OUT_MS + TRANSITION_IN_MS;
