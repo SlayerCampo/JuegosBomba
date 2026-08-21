@@ -24,7 +24,7 @@ export function RoomCodeInput({ onJoin, isConnecting, error }: RoomCodeInputProp
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
       {/* Input row */}
-      <div className="flex flex-row items-center justify-center gap-2 w-full max-w-[280px] mx-auto">
+      <div className="flex items-center justify-center gap-3 mx-auto">
         <input
           type="text"
           value={code}
@@ -35,7 +35,7 @@ export function RoomCodeInput({ onJoin, isConnecting, error }: RoomCodeInputProp
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
-          className="h-12 flex-1 font-black text-2xl text-center tracking-[0.2em] border-2 outline-none
+          className="h-14 w-48 font-black text-2xl text-center tracking-widest border-2 outline-none
                      transition-all duration-200 rounded-xl"
           style={{
             background: 'var(--color-bg-card)',
@@ -64,7 +64,7 @@ export function RoomCodeInput({ onJoin, isConnecting, error }: RoomCodeInputProp
           type="submit"
           disabled={!isReady}
           aria-label="Unirse a la sala"
-          className={`h-12 w-12 flex items-center justify-center rounded-xl font-bold text-white
+          className={`h-14 w-14 flex items-center justify-center rounded-xl font-bold text-white
                      transition-all duration-200 flex-shrink-0
                      ${isReady ? 'hover:scale-105 active:scale-95 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
           style={{
@@ -74,9 +74,9 @@ export function RoomCodeInput({ onJoin, isConnecting, error }: RoomCodeInputProp
           }}
         >
           {isConnecting ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <Loader2 className="w-7 h-7 animate-spin" />
           ) : (
-            <ChevronRight className="w-6 h-6" strokeWidth={3} />
+            <ChevronRight className="w-7 h-7" strokeWidth={3} />
           )}
         </button>
       </div>
