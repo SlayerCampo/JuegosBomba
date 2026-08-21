@@ -125,39 +125,42 @@ export function StopGameView() {
               </div>
             );
          })}
-      </div>
 
-      {/* STOP BUTTON FLOATING */}
-      <div className="absolute bottom-6 w-full px-4 md:px-8">
-         <button
-           onClick={handleStopClick}
-           disabled={!allFilled || !!stopTriggeredBy || isExpired}
-           className="w-full py-4 rounded-2xl font-black text-2xl text-white transition-all duration-200 shadow-xl flex items-center justify-center gap-3
-                      disabled:opacity-50 disabled:grayscale disabled:scale-100
-                      hover:scale-[1.03] active:scale-[0.97]"
-           style={{ 
-             background: 'linear-gradient(135deg, var(--color-danger), #b91c1c)',
-             boxShadow: '0 8px 30px rgba(239,68,68,0.4)'
-           }}
-         >
-           <span className="text-3xl">🛑</span> ¡STOP BOMBA!
-         </button>
-      </div>
-
-      {/* OVERLAY */}
-      {(stopTriggeredBy || isExpired) && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-8 text-center" style={{ height: '100%', minHeight: '100%' }}>
-           <h2 className="text-[5rem] md:text-[8rem] font-black text-red-500 mb-6 animate-pop-in" style={{ textShadow: '0 0 30px rgba(239,68,68,0.8)' }}>¡BOOM!</h2>
-           <p className="text-3xl text-white font-bold mb-8">
-             {stopTriggeredBy === (myId || 'host') ? '¡Detuviste el juego!' : 
-              stopTriggeredBy === 'time' ? '¡Se acabó el tiempo!' : 
-              '¡Alguien detuvo el juego!'}
-           </p>
-           <p className="text-xl text-[var(--color-primary)] animate-pulse-slow">
-             Tus respuestas han sido enviadas. Pasando a votar...
-           </p>
+           {/* STOP BUTTON */}
+           <div className="mt-8 mb-4 w-full">
+              <button
+                onClick={handleStopClick}
+                disabled={!allFilled || !!stopTriggeredBy || isExpired}
+                className="w-full py-5 rounded-[2rem] font-black text-2xl text-white transition-all duration-200 flex items-center justify-center gap-3 relative overflow-hidden group
+                           disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:cursor-not-allowed
+                           hover:scale-[1.02] active:scale-[0.98]"
+                style={{ 
+                  background: 'linear-gradient(135deg, var(--color-danger), #991b1b)',
+                  boxShadow: '0 8px 25px rgba(239,68,68,0.3)',
+                  border: 'none'
+                }}
+              >
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="text-3xl relative z-10">🛑</span> 
+                <span className="relative z-10">¡STOP BOMBA!</span>
+              </button>
+           </div>
         </div>
-      )}
+
+        {/* OVERLAY */}
+        {(stopTriggeredBy || isExpired) && (
+          <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md animate-fade-in p-8 text-center w-full h-full">
+             <h2 className="text-[5rem] md:text-[8rem] font-black text-red-500 mb-6 animate-pop-in leading-none" style={{ textShadow: '0 0 40px rgba(239,68,68,0.8)' }}>¡BOOM!</h2>
+             <p className="text-2xl md:text-3xl text-white font-bold mb-8">
+               {stopTriggeredBy === (myId || 'host') ? '¡Detuviste el juego!' : 
+                stopTriggeredBy === 'time' ? '¡Se acabó el tiempo!' : 
+                '¡Alguien detuvo el juego!'}
+             </p>
+             <p className="text-lg md:text-xl text-[var(--color-primary)] animate-pulse-slow font-bold max-w-sm mx-auto">
+               Tus respuestas han sido enviadas. Pasando a votar...
+             </p>
+          </div>
+        )}
     </div>
   );
 }

@@ -150,15 +150,16 @@ export function useStopGameState() {
     stateRef.current = { ...state, categoryVotes: catVotes };
     setGameState(stateRef.current);
 
-    // Check if everyone has voted for everyone
+    // Check if everyone has voted for everyone (except for empty answers)
     let allVoted = true;
     const pIds = Object.keys(state.players);
+    const currentCat = state.selectedCats[state.currentReviewCategoryIndex];
     for (const vId of pIds) {
       for (const tId of pIds) {
+        const isEmpty = (state.allAnswers[tId]?.[currentCat] || '').trim().length === 0;
+        if (isEmpty) continue; // No one can vote for empty answers
+
         if (!catVotes[vId] || !catVotes[vId][tId]) {
-          // Exception: if the target answer was empty, we could auto-fill it, 
-          // but let's assume the UI enforces it or auto-fills 'invalid'.
-          // Actually, let's just check if it's there.
           allVoted = false;
         }
       }
@@ -179,10 +180,18 @@ export function useStopGameState() {
     const resolution: Record<string, { result: VoteValue; points: number }> = {};
     const pIds = Object.keys(state.players);
 
+    const currentCat = state.selectedCats[state.currentReviewCategoryIndex];
+
     pIds.forEach(targetId => {
+      const isEmpty = (state.allAnswers[targetId]?.[currentCat] || '').trim().length === 0;
+      if (isEmpty) {
+        resolution[targetId] = { result: 'invalid', points: 0 };
+        return;
+      }
+
       const counts = { valid: 0, invalid: 0, repeated: 0 };
       pIds.forEach(voterId => {
-        const v = state.categoryVotes[voterId][targetId];
+        const v = state.categoryVotes[voterId]?.[targetId];
         if (v) counts[v]++;
       });
 
