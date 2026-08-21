@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+/*
+ * ================================================================
+ * JUEGOS BOMBA — Global Design System
+ * Tailwind v4 @theme block: maps all CSS variables to Tailwind tokens
+ * ================================================================
+ */
+
+@theme {
+  /* ── Fonts ─────────────────────────────────────────────────── */
+  --font-main: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* ── Light Mode Palette ───────────────────────────────────── */
+  --color-bg:            #f3eeff;
+  --color-bg-card:       rgba(255,255,255,0.72);
+  --color-bg-card-solid: #fff5ff;
+  --color-bg-secondary:  rgba(243,238,255,0.6);
+
+  --color-primary:       #c084fc;
+  --color-primary-glow:  rgba(192,132,252,0.30);
+  --color-primary-dark:  #a855f7;
+
+  --color-secondary:     #67e8f9;
+  --color-secondary-glow:rgba(103,232,249,0.28);
+
+  --color-accent:        #f9a8d4;
+  --color-accent-glow:   rgba(249,168,212,0.30);
+
+  --color-success:       #86efac;
+  --color-success-dark:  #22c55e;
+  --color-danger:        #fca5a5;
+  --color-danger-dark:   #ef4444;
+  --color-warning:       #fde68a;
+
+  --color-text-main:     #3b0764;
+  --color-text-sub:      #7e22ce;
+  --color-text-muted:    #a78bca;
+
+  --color-border:        rgba(192,132,252,0.22);
+  --color-border-focus:  rgba(192,132,252,0.70);
+
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-sm:  0 2px 12px rgba(139,92,246,0.10);
+  --shadow-md:  0 8px 30px rgba(139,92,246,0.15);
+  --shadow-lg:  0 16px 48px rgba(139,92,246,0.20);
+
+  /* ── Radii ───────────────────────────────────────────────── */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  /* ── Gradient ────────────────────────────────────────────── */
+  --gradient-bg: linear-gradient(145deg, #f3eeff 0%, #fce7f3 40%, #e0f2fe 100%);
+}
+
+/* ── Dark Mode overrides (class="dark" on <html>) ─────────── */
+.dark {
+  --color-bg:            #1a1228;
+  --color-bg-card:       rgba(38,28,60,0.80);
+  --color-bg-card-solid: #201533;
+  --color-bg-secondary:  rgba(26,18,40,0.6);
+
+  --color-primary:       #d8b4fe;
+  --color-primary-glow:  rgba(216,180,254,0.25);
+  --color-primary-dark:  #c084fc;
+
+  --color-secondary:     #a5f3fc;
+  --color-secondary-glow:rgba(165,243,252,0.22);
+
+  --color-accent:        #fbcfe8;
+  --color-accent-glow:   rgba(251,207,232,0.20);
+
+  --color-success:       #bbf7d0;
+  --color-success-dark:  #4ade80;
+  --color-danger:        #fecaca;
+  --color-danger-dark:   #f87171;
+  --color-warning:       #fef08a;
+
+  --color-text-main:     #ede9fe;
+  --color-text-sub:      #ddd6fe;
+  --color-text-muted:    #a78bca;
+
+  --color-border:        rgba(216,180,254,0.18);
+  --color-border-focus:  rgba(216,180,254,0.55);
+
+  --shadow-sm:  0 2px 12px rgba(0,0,0,0.30);
+  --shadow-md:  0 8px 30px rgba(0,0,0,0.40);
+  --shadow-lg:  0 16px 48px rgba(0,0,0,0.50);
+
+  --gradient-bg: linear-gradient(145deg, #1a1228 0%, #1e1535 50%, #131626 100%);
+}
+
+/* ── Base Reset ───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-family: var(--font-main);
+}
+
+body {
+  background: var(--gradient-bg);
+  color: var(--color-text-main);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  overflow-x: clip;
+  transition: background 0.5s ease, color 0.3s ease;
+}
+
+/* ── Keyframe Animations ─────────────────────────────────── */
+@keyframes popIn {
+  0%   { transform: scale(0.4); opacity: 0; }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-8px); }
+  40%     { transform: translateX(8px); }
+  60%     { transform: translateX(-6px); }
+  80%     { transform: translateX(6px); }
+}
+
+@keyframes dots {
+  0%   { content: '.'; }
+  33%  { content: '..'; }
+  66%  { content: '...'; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 132, 252, 0.50); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 14px rgba(192, 132, 252, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 132, 252, 0); }
+}
+
+@keyframes slide-in-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes flash-green {
+  0%   { background-color: rgba(134, 239, 172, 0.25); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-yellow {
+  0%   { background-color: rgba(253, 230, 138, 0.35); }
+  100% { background-color: transparent; }
+}
+
+/* ── Tailwind Utility Helpers ─────────────────────────────── */
+@utility animate-pop-in {
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@utility animate-slide-up {
+  animation: slideUp 0.5s ease;
+}
+
+@utility animate-shake {
+  animation: shake 0.5s ease;
+}
+
+@utility animate-bounce-custom {
+  animation: bounce 1s infinite;
+}
+
+@utility animate-pulse-slow {
+  animation: pulse 1s infinite;
+}
+
+@utility flash-green {
+  animation: flash-green 0.6s ease forwards;
+}
+
+@utility flash-yellow {
+  animation: flash-yellow 0.6s ease forwards;
+}
+
+@utility animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+@utility animate-slide-in-up {
+  animation: slide-in-up 0.35s ease forwards;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 3px; }
+
+/* ── Mobile Keyboard Fix ──────────────────────────────────── */
+/* Hide the mobile ad banner when an input is focused */
+@media (max-width: 1024px) {
+  body:has(input:focus) .mobile-ad-banner {
+    display: none !important;
+  }
+}
