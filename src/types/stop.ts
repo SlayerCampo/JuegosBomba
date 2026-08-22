@@ -4,18 +4,11 @@
 
 import type { StopPlayer, PlayerMap, PlayerId } from './player';
 
-export const STOP_LETTERS = 'ABCDEFGHIJLMNOPRSTUVZ'.split('') as string[];
+export const STOP_LETTERS = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('') as string[];
 export const TOTAL_ROUNDS = 5;
 
-export type CategoryKey =
-  | 'nombres'
-  | 'apellidos'
-  | 'objetos'
-  | 'animales'
-  | 'colores'
-  | 'ciudad'
-  | 'pais'
-  | 'fruta';
+// Permitir genéricos para la categoría extra
+export type CategoryKey = string;
 
 export interface CategoryInfo {
   label: string;
@@ -32,6 +25,16 @@ export const STOP_CATEGORIES: Record<CategoryKey, CategoryInfo> = {
   pais: { label: 'País', emoji: '🌎' },
   fruta: { label: 'Fruta/Comida', emoji: '🍎' }
 };
+
+// Payload sent to all clients to start a round
+export interface StopStartGamePayload {
+  categories: CategoryKey[];
+  letter: string;
+  round: number;
+  totalRounds: number;
+  players: PlayerMap<StopPlayer>;
+  roundMinutes: number;
+}
 
 export type VoteValue = 'valid' | 'invalid' | 'repeated';
 
@@ -67,15 +70,6 @@ export interface StopGameState {
   
   // Round Results Phase
   roundPoints?: Record<string, number>; // playerId -> points earned this round
-}
-
-// Payload sent to all clients to start a round
-export interface StopStartGamePayload {
-  categories: CategoryKey[];
-  letter: string;
-  round: number;
-  players: PlayerMap<StopPlayer>;
-  roundMinutes: number;
 }
 
 // Payload sent to all clients to show a review category

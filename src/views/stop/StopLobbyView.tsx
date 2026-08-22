@@ -7,7 +7,12 @@ import { STOP_CATEGORIES, type CategoryKey } from '@/types/stop';
 import type { PlayerProfile } from '@/types/player';
 
 export function StopLobbyView() {
-  const { lobbyPlayers, setLobbyPlayers, myProfile, startGameAsHost, selectedCats, setSelectedCats } = useStopFlow();
+  const { 
+    lobbyPlayers, setLobbyPlayers, myProfile, startGameAsHost, 
+    selectedCats, setSelectedCats,
+    roundSettings, setRoundSettings,
+    customCategory, setCustomCategory
+  } = useStopFlow();
   const { roomCode, myId, isHost, send } = useNetwork();
 
   // Track how many times we've tried to broadcast our profile.
@@ -154,6 +159,52 @@ export function StopLobbyView() {
               ¡Selecciona al menos 3 categorías!
             </p>
           )}
+
+          {/* AJUSTES EXTRA */}
+          <div className="w-full flex flex-col gap-6 mt-8 pt-8 border-t border-[var(--color-border)]">
+             <p className="font-black uppercase tracking-widest text-center" style={{ fontSize: '18px', color: 'var(--color-text-muted)' }}>
+               Ajustes de Partida
+             </p>
+             
+             <div className="flex flex-col md:flex-row gap-6 w-full justify-around">
+               {/* RONDAS */}
+               <div className="flex flex-col items-center gap-2 flex-1">
+                 <span className="font-bold text-[var(--color-text-main)]">Rondas</span>
+                 <div className="flex items-center gap-4 bg-black/5 p-2 rounded-2xl">
+                   <button onClick={() => setRoundSettings(s => ({...s, totalRounds: Math.max(1, s.totalRounds - 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">-</button>
+                   <span className="text-2xl font-black min-w-[30px] text-center text-[var(--color-primary)]">{roundSettings.totalRounds}</span>
+                   <button onClick={() => setRoundSettings(s => ({...s, totalRounds: Math.min(10, s.totalRounds + 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">+</button>
+                 </div>
+               </div>
+
+               {/* TIEMPO */}
+               <div className="flex flex-col items-center gap-2 flex-1">
+                 <span className="font-bold text-[var(--color-text-main)]">Tiempo Límite</span>
+                 <div className="flex items-center gap-4 bg-black/5 p-2 rounded-2xl">
+                   <button onClick={() => setRoundSettings(s => ({...s, roundMinutes: Math.max(1, s.roundMinutes - 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">-</button>
+                   <span className="text-2xl font-black min-w-[60px] text-center text-[var(--color-primary)]">{roundSettings.roundMinutes} <span className="text-sm">min</span></span>
+                   <button onClick={() => setRoundSettings(s => ({...s, roundMinutes: Math.min(10, s.roundMinutes + 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">+</button>
+                 </div>
+               </div>
+             </div>
+
+             {/* CATEGORIA EXTRA */}
+             <div className="flex flex-col gap-2 mt-4">
+                <span className="font-bold text-center text-[var(--color-text-main)]">Categoría Extra <span className="text-sm opacity-50">(Opcional)</span></span>
+                <input 
+                  type="text" 
+                  value={customCategory || ''}
+                  onChange={e => setCustomCategory(e.target.value)}
+                  placeholder="Ej: Villanos"
+                  maxLength={15}
+                  className="w-full text-center font-bold text-lg p-4 rounded-2xl border-2 outline-none focus:border-[var(--color-primary)] transition-colors"
+                  style={{ background: 'var(--color-bg-card-solid)', color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}
+                />
+                <span className="text-xs text-center text-amber-500 font-bold mt-1">
+                   ⚠️ Por favor usa solo UNA palabra corta.
+                </span>
+             </div>
+          </div>
         </div>
       )}
 

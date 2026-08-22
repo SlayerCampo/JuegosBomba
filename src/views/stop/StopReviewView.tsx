@@ -14,7 +14,7 @@ export function StopReviewView() {
   const myRealId = myId || 'host';
 
   const catKey = gameState.selectedCats[gameState.currentReviewCategoryIndex];
-  const catInfo = STOP_CATEGORIES[catKey];
+  const catInfo = STOP_CATEGORIES[catKey] || { label: `EXTRAS: ${catKey.toUpperCase()}`, emoji: '⭐' };
   const allAnswers = gameState.allAnswers;
 
   const handleVote = (targetId: string, vote: VoteValue) => {
@@ -201,16 +201,17 @@ export function StopReviewView() {
            
            {/* HOST NEXT BUTTON */}
            {isHost && (
-             <div className="sticky bottom-4 w-full mt-6 pb-4 animate-slide-up">
+             <div className="sticky bottom-4 w-full mt-8 animate-slide-up z-10">
                <button
                  onClick={handleNextCategory}
                  disabled={!gameState.categoryResolutions || Object.keys(gameState.categoryResolutions).length === 0 || gameState.isTieWarning}
                  className="w-full py-4 rounded-2xl font-black text-xl text-white transition-all duration-200
                             disabled:opacity-60 disabled:cursor-not-allowed
-                            hover:scale-[1.02] active:scale-[0.98] shadow-xl"
+                            hover:scale-[1.02] active:scale-[0.98]"
                  style={{ 
                    background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
-                   boxShadow: '0 8px 30px var(--color-primary-glow)'
+                   boxShadow: '0 8px 25px var(--color-primary-glow)',
+                   border: 'none'
                  }}
                >
                  {gameState.isTieWarning ? 'Resuelvan el empate ⚠️' :

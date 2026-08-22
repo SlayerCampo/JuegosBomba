@@ -120,7 +120,7 @@ export function StopGameView() {
       {/* INPUTS GRID */}
       <div className="w-full flex-1 overflow-y-auto px-2 md:px-6 flex flex-col gap-5 pb-16">
          {gameState.selectedCats.map(cat => {
-            const info = STOP_CATEGORIES[cat];
+            const info = STOP_CATEGORIES[cat] || { label: `EXTRAS: ${cat.toUpperCase()}`, emoji: '⭐' };
             const val = answers[cat] || '';
             const hasValue = val.trim().length > 0;
             return (

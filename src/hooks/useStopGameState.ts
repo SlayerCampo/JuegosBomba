@@ -22,8 +22,11 @@ export function useStopGameState() {
     setGameState(newState);
   }, []);
 
-  const getRandomLetter = () => {
-    const letters = 'ABCDEFGHIJLMNOPRSTUVZ'.split('');
+  const getRandomLetter = (previousLetter?: string) => {
+    let letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+    if (previousLetter) {
+      letters = letters.filter(l => l !== previousLetter);
+    }
     return letters[Math.floor(Math.random() * letters.length)];
   };
 
@@ -31,7 +34,8 @@ export function useStopGameState() {
     categories: CategoryKey[],
     players: PlayerMap<StopPlayer>,
     roundMinutes: number = 5,
-    round: number = 1
+    round: number = 1,
+    totalRounds: number = 5
   ): StopStartGamePayload => {
     
     // If round 1, reset scores
@@ -45,11 +49,14 @@ export function useStopGameState() {
     const duration = roundMinutes * 60;
     const turnEndTime = Date.now() + 2500 + duration * 1000; // 2.5s for countdown overlay + duration
 
+    const previousLetter = round > 1 && stateRef.current ? stateRef.current.currentLetter : undefined;
+    const currentLetter = getRandomLetter(previousLetter);
+
     const initialState: StopGameState = {
       selectedCats: categories,
-      currentLetter: getRandomLetter(),
+      currentLetter,
       currentRound: round,
-      totalRounds: 5,
+      totalRounds,
       roundMinutes,
       players: pMap,
       
@@ -69,6 +76,7 @@ export function useStopGameState() {
       categories: initialState.selectedCats,
       letter: initialState.currentLetter,
       round: initialState.currentRound,
+      totalRounds: initialState.totalRounds,
       players: initialState.players,
       roundMinutes: initialState.roundMinutes
     };

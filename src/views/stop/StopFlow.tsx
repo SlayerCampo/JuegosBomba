@@ -31,6 +31,10 @@ import { StopGameOverView }  from './StopGameOverView';
 interface StopFlowContextValue {
   selectedCats: CategoryKey[];
   setSelectedCats: (cats: CategoryKey[]) => void;
+  customCategory: string | null;
+  setCustomCategory: (cat: string | null) => void;
+  roundSettings: { totalRounds: number; roundMinutes: number };
+  setRoundSettings: React.Dispatch<React.SetStateAction<{ totalRounds: number; roundMinutes: number }>>;
   targetRoomCode: string | null;
   setTargetRoomCode: (code: string | null) => void;
   isHostIntent: boolean;
@@ -70,6 +74,8 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
   const { isHost, send } = useNetwork();
   
   const [selectedCats, setSelectedCats] = useState<CategoryKey[]>([]);
+  const [customCategory, setCustomCategory] = useState<string | null>(null);
+  const [roundSettings, setRoundSettings] = useState({ totalRounds: 5, roundMinutes: 5 });
   const [targetRoomCode, setTargetRoomCode] = useState<string | null>(null);
   const [isHostIntent, setIsHostIntent] = useState(false);
   const [lobbyPlayers, setLobbyPlayers] = useState<Record<string, PlayerProfile>>({});
@@ -107,11 +113,14 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
     // Check if we already have a round
     const currentRound = stateRef.current ? stateRef.current.currentRound + 1 : 1;
     
-    const startPayload = initGameAsHost(selectedCats, players, 5, currentRound);
+    // Inject custom category if it exists
+    const finalCats = customCategory ? [...selectedCats, customCategory] : selectedCats;
+    
+    const startPayload = initGameAsHost(finalCats, players, roundSettings.roundMinutes, currentRound, roundSettings.totalRounds);
     setStopTriggeredBy(null);
     send('STOP_START_GAME', startPayload);
     navigate('stop-countdown');
-  }, [isHost, lobbyPlayers, selectedCats, initGameAsHost, send, navigate, stateRef]);
+  }, [isHost, lobbyPlayers, selectedCats, customCategory, roundSettings, initGameAsHost, send, navigate, stateRef]);
 
   const handleMessage = useCallback((msg: PeerMessage) => {
     console.log('[StopFlow] handleMessage received:', msg.type, msg.payload);
@@ -168,7 +177,7 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
             selectedCats: p.categories,
             currentLetter: p.letter,
             currentRound: p.round,
-            totalRounds: 5,
+            totalRounds: p.totalRounds,
             roundMinutes: p.roundMinutes,
             players: p.players,
             phase: 'PLAYING',
@@ -406,6 +415,8 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
 
   const contextValue: StopFlowContextValue = {
     selectedCats, setSelectedCats,
+    customCategory, setCustomCategory,
+    roundSettings, setRoundSettings,
     targetRoomCode, setTargetRoomCode,
     isHostIntent, setIsHostIntent,
     lobbyPlayers, setLobbyPlayers,
