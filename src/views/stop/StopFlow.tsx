@@ -76,6 +76,15 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
   const [myProfile, setMyProfile] = useState<{ name: string; emoji: string } | null>(null);
   
   const [stopTriggeredBy, setStopTriggeredBy] = useState<string | null>(null);
+  const [cheatMessage, setCheatMessage] = useState<{ id: number, text: string } | null>(null);
+
+  // Clear cheat message after 5 seconds
+  useEffect(() => {
+    if (cheatMessage) {
+      const timer = setTimeout(() => setCheatMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [cheatMessage]);
 
   const {
     gameState,
@@ -181,6 +190,14 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
         }
         // Do not navigate immediately, the overlay in StopGameView will handle this and then wait for host
         break;
+
+      case 'STOP_CHEAT_DETECTED': {
+        const cheatId = msg.payload as string;
+        // Si no está en players (ej. es host pero host no está en lobbyPlayers a veces, usamos un nombre por defecto)
+        const playerName = lobbyPlayers[cheatId]?.name || (cheatId === 'host' ? myProfile?.name : 'Alguien');
+        setCheatMessage({ id: Date.now(), text: `¡🚨 ${playerName} se salió del juego a buscar respuestas!` });
+        break;
+      }
 
       case 'STOP_SUBMIT_ANSWERS':
         if (isHost) {
@@ -401,6 +418,17 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
   return (
     <StopFlowContext.Provider value={contextValue}>
       {renderView()}
+
+      {/* CHEAT TOAST */}
+      {cheatMessage && (
+        <div 
+          key={cheatMessage.id} 
+          className="fixed top-4 right-4 z-[99999] bg-red-600 text-white px-4 py-3 rounded-2xl shadow-2xl border-4 border-red-800 animate-slide-left flex items-center gap-3 max-w-[90vw]"
+        >
+           <span className="text-3xl animate-bounce">👀</span>
+           <p className="font-black text-sm md:text-base">{cheatMessage.text}</p>
+        </div>
+      )}
     </StopFlowContext.Provider>
   );
 }

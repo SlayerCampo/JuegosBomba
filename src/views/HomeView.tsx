@@ -139,7 +139,9 @@ export function HomeView() {
           icon="💣"
           title="Palabras Bomba"
           description="Agilidad mental, tiempo en contra y muchas palabras."
-          onClick={() => navigate('palabras-config')}
+          onClick={() => {}}
+          disabled
+          badge="En Actualización"
         />
         <GameCard
           icon="🛑"

@@ -46,6 +46,28 @@ export function StopGameView() {
     }
   }, [isExpired, stopTriggeredBy, stop, send, myId, isHost, answers, dispatchLocalMessage]);
 
+  // Cheat Detector: If user minimizes or switches tabs while playing
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && gameState?.phase === 'PLAYING' && !stopTriggeredBy && !isExpired) {
+        const triggerId = myId || 'host';
+        send('STOP_CHEAT_DETECTED', triggerId);
+        if (isHost) {
+          dispatchLocalMessage({ type: 'STOP_CHEAT_DETECTED', payload: triggerId });
+        }
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibility);
+    // Also detect window blur just in case
+    window.addEventListener('blur', handleVisibility);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('blur', handleVisibility);
+    };
+  }, [gameState?.phase, isExpired, stopTriggeredBy, myId, isHost, send, dispatchLocalMessage]);
+
   const handleInputChange = (cat: CategoryKey, val: string) => {
     setAnswers(prev => ({ ...prev, [cat]: val }));
   };
