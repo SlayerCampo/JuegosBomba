@@ -41,7 +41,7 @@ export default function App() {
 
           {/* ── Mobile banner ad — fixed at bottom, pushes content up ── */}
           {/* Only visible below lg breakpoint. 60px bar height reserves space. */}
-          <AdMobileLeaderboard />
+          {/* <AdMobileLeaderboard /> */}
 
           {/*
            * ── Page layout: Sidebar-Ad | Main content | Sidebar-Ad ──

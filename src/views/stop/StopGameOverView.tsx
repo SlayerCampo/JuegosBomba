@@ -25,7 +25,6 @@ export function StopGameOverView() {
   if (!gameState || sortedPlayers.length === 0) return null;
 
   const winner = sortedPlayers[0];
-  const isMeWinner = winner.id === (myId || 'host');
 
   return (
     <div className="w-full h-full flex flex-col items-center pt-8 pb-24 overflow-y-auto px-4 gap-6 animate-slide-up">
