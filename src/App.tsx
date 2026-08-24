@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { AppView } from '@/types/appView';
 import { useTheme } from '@/hooks/useTheme';
 import { AppProvider } from '@/context/AppContext';
@@ -6,7 +6,7 @@ import { AppProvider } from '@/context/AppContext';
 // Layout chrome
 import { GlobalMenu } from '@/components/layout/GlobalMenu';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
-import { AdSkyscraper } from '@/components/common/AdBannerSlot';
+import { AdSkyscraper, AdMobileLeaderboard } from '@/components/common/AdBannerSlot';
 
 // Views
 import { HomeView } from '@/views/HomeView';
@@ -21,6 +21,29 @@ export default function App() {
 
   const navigate = useCallback((view: AppView) => {
     setCurrentView(view);
+  }, []);
+
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+        setIsKeyboardOpen(true);
+      }
+    };
+    const handleFocusOut = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+        setIsKeyboardOpen(false);
+      }
+    };
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
   }, []);
 
   const goHome = useCallback(() => {
@@ -41,7 +64,7 @@ export default function App() {
 
           {/* ── Mobile banner ad — fixed at bottom, pushes content up ── */}
           {/* Only visible below lg breakpoint. 60px bar height reserves space. */}
-          {/* <AdMobileLeaderboard /> */}
+          <AdMobileLeaderboard isKeyboardOpen={isKeyboardOpen} />
 
           {/*
            * ── Page layout: Sidebar-Ad | Main content | Sidebar-Ad ──
@@ -53,9 +76,11 @@ export default function App() {
            * On small screens (< lg):
            *   • Sidebars are hidden (display:none via Tailwind hidden/lg:flex).
            *   • Main card takes full width up to max-w-md.
-           *   • A 60px padding-bottom reserves space for the fixed mobile banner.
+           *   • Dynamic padding adds 60px to top or bottom depending on keyboard state.
            */}
-          <div className="min-h-screen w-full max-w-screen-2xl mx-auto flex flex-row justify-center lg:justify-between items-stretch px-4 md:px-8">
+          <div 
+            className={`min-h-screen w-full max-w-screen-2xl mx-auto flex flex-row justify-center lg:justify-between items-stretch px-4 md:px-8 transition-all duration-300 lg:pt-0 lg:pb-0 ${isKeyboardOpen ? 'pt-[60px] pb-0' : 'pb-[60px] pt-0'}`}
+          >
             {/* Left skyscraper — desktop only */}
             <div className="hidden lg:block w-[160px] flex-shrink-0">
               <div className="sticky top-8 pt-12">

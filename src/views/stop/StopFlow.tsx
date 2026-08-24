@@ -84,10 +84,10 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
   const [stopTriggeredBy, setStopTriggeredBy] = useState<string | null>(null);
   const [cheatMessage, setCheatMessage] = useState<{ id: number, text: string } | null>(null);
 
-  // Clear cheat message after 5 seconds
+  // Clear cheat message after 8 seconds
   useEffect(() => {
     if (cheatMessage) {
-      const timer = setTimeout(() => setCheatMessage(null), 5000);
+      const timer = setTimeout(() => setCheatMessage(null), 8000);
       return () => clearTimeout(timer);
     }
   }, [cheatMessage]);
@@ -440,10 +440,10 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
       {cheatMessage && (
         <div 
           key={cheatMessage.id} 
-          className="fixed top-4 right-4 z-[99999] bg-red-600 text-white px-4 py-3 rounded-2xl shadow-2xl border-4 border-red-800 animate-slide-left flex items-center gap-3 max-w-[90vw]"
+          className="fixed top-24 left-1/2 -translate-x-1/2 z-[999999] w-[90%] max-w-sm bg-red-600 text-white px-6 py-4 rounded-3xl shadow-[0_10px_40px_rgba(220,38,38,0.8)] border-4 border-white animate-pop-in flex flex-col items-center justify-center text-center gap-2"
         >
-           <span className="text-3xl animate-bounce">👀</span>
-           <p className="font-black text-sm md:text-base">{cheatMessage.text}</p>
+           <span className="text-5xl animate-bounce">🚨</span>
+           <p className="font-black text-lg md:text-xl leading-tight">{cheatMessage.text}</p>
         </div>
       )}
     </StopFlowContext.Provider>

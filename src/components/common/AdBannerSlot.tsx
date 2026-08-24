@@ -38,14 +38,15 @@ export const AdSkyscraper = memo(function AdSkyscraper() {
  * Shown fixed at the bottom of the screen on mobile (below lg).
  * Hidden on wide screens.
  */
-export const AdMobileLeaderboard = memo(function AdMobileLeaderboard() {
+export const AdMobileLeaderboard = memo(function AdMobileLeaderboard({ isKeyboardOpen }: { isKeyboardOpen?: boolean }) {
   return (
     <div
-      className="mobile-ad-banner lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-center"
+      className={`mobile-ad-banner lg:hidden fixed left-0 right-0 z-[999] flex items-center justify-center transition-all duration-300 ${isKeyboardOpen ? 'top-0' : 'bottom-0'}`}
       style={{
         height: '60px',
         background: 'var(--color-bg-card)',
-        borderTop: '1px solid var(--color-border)',
+        borderBottom: isKeyboardOpen ? '1px solid var(--color-border)' : 'none',
+        borderTop: !isKeyboardOpen ? '1px solid var(--color-border)' : 'none',
         backdropFilter: 'blur(10px)',
       }}
     >
