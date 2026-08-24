@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import { useNetwork } from '@/context/NetworkContext';
 import { RoomCodeDisplay } from '@/components/lobby/RoomCodeDisplay';
 import { PlayerLobbyList } from '@/components/lobby/PlayerLobbyList';
@@ -11,9 +11,12 @@ export function StopLobbyView() {
     lobbyPlayers, setLobbyPlayers, myProfile, startGameAsHost, 
     selectedCats, setSelectedCats,
     roundSettings, setRoundSettings,
-    customCategory, setCustomCategory
+    roundSettings, setRoundSettings,
+    customCategories, setCustomCategories
   } = useStopFlow();
   const { roomCode, myId, isHost, send } = useNetwork();
+  
+  const [newCustomCat, setNewCustomCat] = useState('');
 
   // Track how many times we've tried to broadcast our profile.
   // We retry a few times with increasing delays to handle the case where the
@@ -129,9 +132,21 @@ export function StopLobbyView() {
             className="font-black mb-5 uppercase tracking-widest text-center"
             style={{ fontSize: '18px', color: 'var(--color-text-muted)' }}
           >
-            Categorías ({selectedCats.length})
+            Categorías ({selectedCats.length + customCategories.length})
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
+            {customCategories.map((cat, idx) => (
+                <button
+                  key={`custom-${idx}`}
+                  onClick={() => setCustomCategories(customCategories.filter(c => c !== cat))}
+                  className="shrink-0 font-black border-2 transition-all duration-200 cursor-pointer flex items-center justify-center whitespace-nowrap bg-[var(--color-primary)] border-[var(--color-primary)] text-white shadow-[0_0_20px_var(--color-primary-glow)] scale-105"
+                  style={{ padding: '16px 28px', borderRadius: '24px', gap: '12px', fontSize: '18px' }}
+                >
+                  <span style={{ fontSize: '24px' }}>✨</span>
+                  <span>{cat}</span>
+                  <span className="ml-1 text-xs opacity-70">✕</span>
+                </button>
+            ))}
             {Object.keys(STOP_CATEGORIES).map(k => {
               const cat = k as CategoryKey;
               const info = STOP_CATEGORIES[cat];
@@ -154,7 +169,7 @@ export function StopLobbyView() {
               );
             })}
           </div>
-          {selectedCats.length < 3 && (
+          {(selectedCats.length + customCategories.length) < 3 && (
             <p className="text-red-500 text-base mt-5 font-black animate-pulse text-center">
               ¡Selecciona al menos 3 categorías!
             </p>
@@ -191,18 +206,45 @@ export function StopLobbyView() {
              {/* CATEGORIA EXTRA */}
              <div className="flex flex-col gap-2 mt-4">
                 <span className="font-bold text-center text-[var(--color-text-main)]">Categoría Extra <span className="text-sm opacity-50">(Opcional)</span></span>
-                <input 
-                  type="text" 
-                  value={customCategory || ''}
-                  onChange={e => setCustomCategory(e.target.value)}
-                  placeholder="Ej: Villanos"
-                  maxLength={15}
-                  className="w-full text-center font-bold text-lg p-4 rounded-2xl border-2 outline-none focus:border-[var(--color-primary)] transition-colors"
-                  style={{ background: 'var(--color-bg-card-solid)', color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}
-                />
-                <span className="text-xs text-center text-amber-500 font-bold mt-1">
-                   ⚠️ Por favor usa solo UNA palabra corta.
-                </span>
+                <div className="flex w-full gap-2">
+                  <input 
+                    type="text" 
+                    value={newCustomCat}
+                    onChange={e => setNewCustomCat(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        const trimmed = newCustomCat.trim();
+                        if (trimmed && !customCategories.includes(trimmed)) {
+                          setCustomCategories([...customCategories, trimmed]);
+                          setNewCustomCat('');
+                        }
+                      }
+                    }}
+                    placeholder="Ej: Villanos"
+                    maxLength={15}
+                    className="flex-1 text-center font-bold text-lg p-4 rounded-2xl border-2 outline-none focus:border-[var(--color-primary)] transition-colors"
+                    style={{ background: 'var(--color-bg-card-solid)', color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}
+                  />
+                  <button 
+                    onClick={() => {
+                      const trimmed = newCustomCat.trim();
+                      if (trimmed && !customCategories.includes(trimmed)) {
+                        setCustomCategories([...customCategories, trimmed]);
+                        setNewCustomCat('');
+                      }
+                    }}
+                    disabled={!newCustomCat.trim()}
+                    className="px-6 rounded-2xl font-black text-white disabled:opacity-50 transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    style={{ background: 'var(--color-primary)' }}
+                  >
+                    Añadir
+                  </button>
+                </div>
+                {newCustomCat.trim().length > 0 && (
+                  <span className="text-xs text-center text-amber-500 font-bold mt-1">
+                     ⚠️ Por favor usa solo UNA palabra corta.
+                  </span>
+                )}
              </div>
           </div>
         </div>
@@ -212,7 +254,7 @@ export function StopLobbyView() {
         <div className="w-full">
           <button
             onClick={handleStart}
-            disabled={players.length < 2 || selectedCats.length < 3}
+            disabled={players.length < 2 || (selectedCats.length + customCategories.length) < 3}
             className="w-full font-black text-white transition-all duration-200
                        hover:scale-[1.02] active:scale-[0.98]
                        disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"

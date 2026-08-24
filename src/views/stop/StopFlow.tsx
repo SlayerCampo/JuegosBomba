@@ -31,8 +31,8 @@ import { StopGameOverView }  from './StopGameOverView';
 interface StopFlowContextValue {
   selectedCats: CategoryKey[];
   setSelectedCats: (cats: CategoryKey[]) => void;
-  customCategory: string | null;
-  setCustomCategory: (cat: string | null) => void;
+  customCategories: string[];
+  setCustomCategories: (cats: string[]) => void;
   roundSettings: { totalRounds: number; roundMinutes: number };
   setRoundSettings: React.Dispatch<React.SetStateAction<{ totalRounds: number; roundMinutes: number }>>;
   targetRoomCode: string | null;
@@ -74,7 +74,7 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
   const { isHost, send } = useNetwork();
   
   const [selectedCats, setSelectedCats] = useState<CategoryKey[]>([]);
-  const [customCategory, setCustomCategory] = useState<string | null>(null);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [roundSettings, setRoundSettings] = useState({ totalRounds: 5, roundMinutes: 5 });
   const [targetRoomCode, setTargetRoomCode] = useState<string | null>(null);
   const [isHostIntent, setIsHostIntent] = useState(false);
@@ -113,8 +113,8 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
     // Check if we already have a round
     const currentRound = stateRef.current ? stateRef.current.currentRound + 1 : 1;
     
-    // Inject custom category if it exists
-    const finalCats = customCategory ? [...selectedCats, customCategory] : selectedCats;
+    // Inject custom categories if they exist
+    const finalCats = [...selectedCats, ...customCategories];
     
     const startPayload = initGameAsHost(finalCats, players, roundSettings.roundMinutes, currentRound, roundSettings.totalRounds);
     setStopTriggeredBy(null);
@@ -415,7 +415,7 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
 
   const contextValue: StopFlowContextValue = {
     selectedCats, setSelectedCats,
-    customCategory, setCustomCategory,
+    customCategories, setCustomCategories,
     roundSettings, setRoundSettings,
     targetRoomCode, setTargetRoomCode,
     isHostIntent, setIsHostIntent,
