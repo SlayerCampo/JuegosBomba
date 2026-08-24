@@ -6,7 +6,7 @@ import { AdBannerSlot } from '@/components/common/AdBannerSlot';
 
 export function StopGameOverView() {
   const { navigate } = useAppContext();
-  const { isHost, myId } = useNetwork();
+  const { isHost } = useNetwork();
   const { gameState } = useStopFlow();
 
   const sortedPlayers = useMemo(() => {

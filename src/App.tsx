@@ -6,7 +6,7 @@ import { AppProvider } from '@/context/AppContext';
 // Layout chrome
 import { GlobalMenu } from '@/components/layout/GlobalMenu';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
-import { AdSkyscraper, AdMobileLeaderboard } from '@/components/common/AdBannerSlot';
+import { AdSkyscraper } from '@/components/common/AdBannerSlot';
 
 // Views
 import { HomeView } from '@/views/HomeView';
