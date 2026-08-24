@@ -129,6 +129,17 @@ export function StopReviewView() {
                 const repeatedBadges = votesOnTarget.filter(v => v.vote === 'repeated').map(v => gameState.players[v.voterId]?.emoji).filter(Boolean);
                 const invalidBadges = votesOnTarget.filter(v => v.vote === 'invalid').map(v => gameState.players[v.voterId]?.emoji).filter(Boolean);
 
+                const renderBadges = (badges: (string | undefined)[], prefix: string) => {
+                  const visible = badges.slice(0, 3);
+                  const hidden = badges.length - 3;
+                  return (
+                    <>
+                      {visible.map((emoji, i) => <span key={`${prefix}-${i}`} className="animate-bounce" style={{ animationDelay: `${i * 150}ms` }}>{emoji}</span>)}
+                      {hidden > 0 && <span className="text-xs font-black opacity-80 ml-1">+{hidden}</span>}
+                    </>
+                  );
+                };
+
                 return (
                   <div key={p.id} className="flex flex-col bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border)] shadow-sm overflow-hidden">
                      
@@ -162,8 +173,8 @@ export function StopReviewView() {
                              >
                                 <span className="text-xl mb-1">✅</span>
                                 <span className="text-xs font-bold text-green-500">Válida</span>
-                                <div className="flex gap-1 mt-1 text-[10px]">
-                                   {validBadges.map((emoji, i) => <span key={`v-${i}`} className="animate-bounce" style={{ animationDelay: `${i * 150}ms` }}>{emoji}</span>)}
+                                <div className="flex items-center gap-1 mt-1 text-sm">
+                                   {renderBadges(validBadges, 'v')}
                                 </div>
                              </button>
 
@@ -174,8 +185,8 @@ export function StopReviewView() {
                              >
                                 <span className="text-xl mb-1">🔁</span>
                                 <span className="text-xs font-bold text-blue-500">Repetida</span>
-                                <div className="flex gap-1 mt-1 text-[10px]">
-                                   {repeatedBadges.map((emoji, i) => <span key={`r-${i}`} className="animate-bounce" style={{ animationDelay: `${i * 150}ms` }}>{emoji}</span>)}
+                                <div className="flex items-center gap-1 mt-1 text-sm">
+                                   {renderBadges(repeatedBadges, 'r')}
                                 </div>
                              </button>
 
@@ -186,8 +197,8 @@ export function StopReviewView() {
                              >
                                 <span className="text-xl mb-1">❌</span>
                                 <span className="text-xs font-bold text-red-500">Inválida</span>
-                                <div className="flex gap-1 mt-1 text-[10px]">
-                                   {invalidBadges.map((emoji, i) => <span key={`i-${i}`} className="animate-bounce" style={{ animationDelay: `${i * 150}ms` }}>{emoji}</span>)}
+                                <div className="flex items-center gap-1 mt-1 text-sm">
+                                   {renderBadges(invalidBadges, 'i')}
                                 </div>
                              </button>
                           </div>

@@ -251,10 +251,16 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
       case 'STOP_VOTE':
         if (isHost) {
           const p = msg.payload as StopVotePayload;
+          const wasTie = stateRef.current?.isTieWarning;
           const resolvePayload = hostReceiveVote(p.voterId, p.targetId, p.vote);
+          const isTie = stateRef.current?.isTieWarning;
           
           // Always sync votes immediately
           send('STOP_VOTES_SYNC', { votes: stateRef.current!.categoryVotes });
+          
+          if (!wasTie && isTie) {
+            send('STOP_TIE_WARNING', {});
+          }
           
           if (resolvePayload) {
             send('STOP_CAT_RESOLVED', resolvePayload);
