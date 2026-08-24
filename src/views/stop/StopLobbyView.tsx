@@ -184,20 +184,20 @@ export function StopLobbyView() {
                {/* RONDAS */}
                <div className="flex flex-col items-center gap-2 flex-1">
                  <span className="font-bold text-[var(--color-text-main)]">Rondas</span>
-                 <div className="flex items-center gap-4 bg-black/5 p-2 rounded-2xl">
-                   <button onClick={() => setRoundSettings(s => ({...s, totalRounds: Math.max(1, s.totalRounds - 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">-</button>
+                 <div className="flex items-center gap-4 p-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+                   <button onClick={() => setRoundSettings(s => ({...s, totalRounds: Math.max(1, s.totalRounds - 1)}))} className="w-10 h-10 rounded-xl flex items-center justify-center border-2 border-[var(--color-border)] bg-[var(--color-bg-card-solid)] text-[var(--color-text-main)] shadow-sm font-black text-xl hover:scale-105 hover:border-[var(--color-primary)] active:scale-95 transition-all cursor-pointer">-</button>
                    <span className="text-2xl font-black min-w-[30px] text-center text-[var(--color-primary)]">{roundSettings.totalRounds}</span>
-                   <button onClick={() => setRoundSettings(s => ({...s, totalRounds: Math.min(10, s.totalRounds + 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">+</button>
+                   <button onClick={() => setRoundSettings(s => ({...s, totalRounds: Math.min(10, s.totalRounds + 1)}))} className="w-10 h-10 rounded-xl flex items-center justify-center border-2 border-[var(--color-border)] bg-[var(--color-bg-card-solid)] text-[var(--color-text-main)] shadow-sm font-black text-xl hover:scale-105 hover:border-[var(--color-primary)] active:scale-95 transition-all cursor-pointer">+</button>
                  </div>
                </div>
 
                {/* TIEMPO */}
                <div className="flex flex-col items-center gap-2 flex-1">
                  <span className="font-bold text-[var(--color-text-main)]">Tiempo Límite</span>
-                 <div className="flex items-center gap-4 bg-black/5 p-2 rounded-2xl">
-                   <button onClick={() => setRoundSettings(s => ({...s, roundMinutes: Math.max(1, s.roundMinutes - 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">-</button>
+                 <div className="flex items-center gap-4 p-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+                   <button onClick={() => setRoundSettings(s => ({...s, roundMinutes: Math.max(1, s.roundMinutes - 1)}))} className="w-10 h-10 rounded-xl flex items-center justify-center border-2 border-[var(--color-border)] bg-[var(--color-bg-card-solid)] text-[var(--color-text-main)] shadow-sm font-black text-xl hover:scale-105 hover:border-[var(--color-primary)] active:scale-95 transition-all cursor-pointer">-</button>
                    <span className="text-2xl font-black min-w-[60px] text-center text-[var(--color-primary)]">{roundSettings.roundMinutes} <span className="text-sm">min</span></span>
-                   <button onClick={() => setRoundSettings(s => ({...s, roundMinutes: Math.min(10, s.roundMinutes + 1)}))} className="w-10 h-10 rounded-xl bg-white shadow-sm font-black text-xl hover:scale-105 active:scale-95 transition-transform">+</button>
+                   <button onClick={() => setRoundSettings(s => ({...s, roundMinutes: Math.min(10, s.roundMinutes + 1)}))} className="w-10 h-10 rounded-xl flex items-center justify-center border-2 border-[var(--color-border)] bg-[var(--color-bg-card-solid)] text-[var(--color-text-main)] shadow-sm font-black text-xl hover:scale-105 hover:border-[var(--color-primary)] active:scale-95 transition-all cursor-pointer">+</button>
                  </div>
                </div>
              </div>
