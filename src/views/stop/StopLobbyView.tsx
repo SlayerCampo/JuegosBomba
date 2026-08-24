@@ -11,7 +11,6 @@ export function StopLobbyView() {
     lobbyPlayers, setLobbyPlayers, myProfile, startGameAsHost, 
     selectedCats, setSelectedCats,
     roundSettings, setRoundSettings,
-    roundSettings, setRoundSettings,
     customCategories, setCustomCategories
   } = useStopFlow();
   const { roomCode, myId, isHost, send } = useNetwork();

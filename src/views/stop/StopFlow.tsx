@@ -120,7 +120,7 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
     setStopTriggeredBy(null);
     send('STOP_START_GAME', startPayload);
     navigate('stop-countdown');
-  }, [isHost, lobbyPlayers, selectedCats, customCategory, roundSettings, initGameAsHost, send, navigate, stateRef]);
+  }, [isHost, lobbyPlayers, selectedCats, customCategories, roundSettings, initGameAsHost, send, navigate, stateRef]);
 
   const handleMessage = useCallback((msg: PeerMessage) => {
     console.log('[StopFlow] handleMessage received:', msg.type, msg.payload);
