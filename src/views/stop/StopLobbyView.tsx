@@ -2,6 +2,7 @@ import { useMemo, useEffect, useRef, useState } from 'react';
 import { useNetwork } from '@/context/NetworkContext';
 import { RoomCodeDisplay } from '@/components/lobby/RoomCodeDisplay';
 import { PlayerLobbyList } from '@/components/lobby/PlayerLobbyList';
+import { AdInlineRectangle } from '@/components/common/AdBannerSlot';
 import { useStopFlow } from './StopFlow';
 import { STOP_CATEGORIES, type CategoryKey } from '@/types/stop';
 import type { PlayerProfile } from '@/types/player';
@@ -117,6 +118,8 @@ export function StopLobbyView() {
       <div className="w-full">
         <PlayerLobbyList players={players} myId={myId ?? ''} />
       </div>
+      
+      <AdInlineRectangle />
 
       {isHost && (
         <div

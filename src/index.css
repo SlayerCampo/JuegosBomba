@@ -210,14 +210,12 @@ body {
 }
 
 /* ── Scrollbar ────────────────────────────────────────────── */
-::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 3px; }
-
-/* ── Mobile Keyboard Fix ──────────────────────────────────── */
-/* Hide the mobile ad banner when an input is focused */
-@media (max-width: 1024px) {
-  body:has(input:focus) .mobile-ad-banner {
-    display: none !important;
-  }
+::-webkit-scrollbar-thumb { 
+  background: var(--color-border-focus); 
+  border-radius: 4px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--color-primary); 
 }

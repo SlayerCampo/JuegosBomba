@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStopFlow } from './StopFlow';
 import { useNetwork } from '@/context/NetworkContext';
 import { STOP_CATEGORIES, type VoteValue } from '@/types/stop';
+import { AdInlineRectangle } from '@/components/common/AdBannerSlot';
 
 export function StopReviewView() {
   const { gameState, dispatchLocalMessage } = useStopFlow();
@@ -91,9 +92,12 @@ export function StopReviewView() {
                {gameState.currentRound >= gameState.totalRounds ? 'Ver Resultados Finales 🏆' : 'Siguiente Ronda 🔄'}
              </button>
            ) : (
-             <p className="text-center text-[var(--color-text-muted)] mt-8 font-bold animate-pulse">
-               Esperando al creador...
-             </p>
+             <div className="mt-8 flex flex-col items-center gap-4">
+               <p className="text-center text-[var(--color-text-muted)] font-bold animate-pulse">
+                 Esperando al creador...
+               </p>
+               <AdInlineRectangle />
+             </div>
            )}
         </div>
       ) : (
@@ -232,14 +236,20 @@ export function StopReviewView() {
              </div>
            )}
            {!isHost && (!gameState.categoryResolutions || Object.keys(gameState.categoryResolutions).length === 0 || gameState.isTieWarning) && (
-             <p className="text-center text-[var(--color-text-muted)] mt-4 font-bold animate-pulse">
-               Esperando que todos voten...
-             </p>
+             <div className="mt-8 flex flex-col items-center gap-4 w-full">
+               <p className="text-center text-[var(--color-text-muted)] font-bold animate-pulse">
+                 Esperando que todos voten...
+               </p>
+               <AdInlineRectangle />
+             </div>
            )}
            {!isHost && gameState.categoryResolutions && Object.keys(gameState.categoryResolutions).length > 0 && !gameState.isTieWarning && (
-             <p className="text-center text-[var(--color-text-muted)] mt-4 font-bold animate-pulse-slow">
-               Esperando al anfitrión...
-             </p>
+             <div className="mt-8 flex flex-col items-center gap-4 w-full">
+               <p className="text-center text-[var(--color-text-muted)] font-bold animate-pulse-slow">
+                 Esperando al anfitrión...
+               </p>
+               <AdInlineRectangle />
+             </div>
            )}
 
         </div>

@@ -78,6 +78,7 @@ export interface StopReviewCategoryPayload {
   catIndex: number;
   totalCats: number;
   allAnswers: Record<PlayerId, Record<CategoryKey, string>>;
+  autoResolutions?: CategoryResolution;
 }
 
 // Payload when the host resolves a category

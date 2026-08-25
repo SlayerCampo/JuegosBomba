@@ -72,11 +72,39 @@ export const AdMobileLeaderboard = memo(function AdMobileLeaderboard({ isKeyboar
 });
 
 /**
+ * AdInlineRectangle — IAB Medium Rectangle (300×250)
+ * Intended for inline placement between logical sections of a page.
+ */
+export const AdInlineRectangle = memo(function AdInlineRectangle() {
+  return (
+    <div className="w-full flex justify-center items-center my-6">
+      <div
+        className="flex items-center justify-center flex-shrink-0"
+        style={{
+          width: '300px',
+          height: '250px',
+          background: 'var(--color-bg-card)',
+          border: '2px dashed var(--color-border)',
+          borderRadius: '16px',
+          backdropFilter: 'blur(10px)',
+          opacity: 0.6,
+        }}
+      >
+        <span
+          className="text-xs uppercase tracking-widest font-bold"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          Ad · 300×250
+        </span>
+      </div>
+    </div>
+  );
+});
+
+/**
  * AdBannerSlot — Legacy inline banner kept for backward compatibility.
- * New code should use the layout-level AdSkyscraper / AdMobileLeaderboard.
  * @deprecated Use the new layout-level ad components instead.
  */
 export const AdBannerSlot = memo(function AdBannerSlot() {
-  // No-op — the new layout handles ads at the App level
   return null;
 });

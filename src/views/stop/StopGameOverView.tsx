@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useNetwork } from '@/context/NetworkContext';
 import { useStopFlow } from './StopFlow';
-import { AdBannerSlot } from '@/components/common/AdBannerSlot';
+import { AdInlineRectangle } from '@/components/common/AdBannerSlot';
 
 export function StopGameOverView() {
   const { navigate } = useAppContext();
@@ -131,7 +131,7 @@ export function StopGameOverView() {
       </div>
 
       <div className="mt-4 w-full">
-        <AdBannerSlot />
+        <AdInlineRectangle />
       </div>
     </div>
   );

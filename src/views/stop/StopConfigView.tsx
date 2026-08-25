@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useStopFlow } from './StopFlow';
 import { RoomCodeInput } from '@/components/lobby/RoomCodeInput';
+import { AdInlineRectangle } from '@/components/common/AdBannerSlot';
 
 export function StopConfigView() {
   const { navigate } = useAppContext();
@@ -70,26 +71,29 @@ export function StopConfigView() {
 
       <div className="w-full">
         {tab === 'host' ? (
-          <button
-            onClick={handleHost}
-            className="w-full flex flex-col items-center justify-center gap-2 text-center border-2
-                       transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-            style={{
-              padding: '32px 24px',
-              borderRadius: '28px',
-              background: 'var(--color-bg-card)',
-              borderColor: 'var(--color-primary)',
-              boxShadow: '0 8px 30px var(--color-primary-glow)',
-            }}
-          >
-            <span className="text-3xl">🏠</span>
-            <span className="font-black text-xl" style={{ color: 'var(--color-primary)' }}>
-              Iniciar Nueva Partida
-            </span>
-            <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              Serás el anfitrión y controlarás el inicio
-            </span>
-          </button>
+          <div className="flex flex-col gap-6">
+            <button
+              onClick={handleHost}
+              className="w-full flex flex-col items-center justify-center gap-2 text-center border-2
+                         transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              style={{
+                padding: '32px 24px',
+                borderRadius: '28px',
+                background: 'var(--color-bg-card)',
+                borderColor: 'var(--color-primary)',
+                boxShadow: '0 8px 30px var(--color-primary-glow)',
+              }}
+            >
+              <span className="text-3xl">🏠</span>
+              <span className="font-black text-xl" style={{ color: 'var(--color-primary)' }}>
+                Iniciar Nueva Partida
+              </span>
+              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Serás el anfitrión y controlarás el inicio
+              </span>
+            </button>
+            <AdInlineRectangle />
+          </div>
         ) : (
           <div className="flex flex-col gap-4">
             <p

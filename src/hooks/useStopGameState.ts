@@ -125,12 +125,26 @@ export function useStopGameState() {
 
     const cat = state.selectedCats[categoryIndex];
 
+    // Check if there are any non-empty answers
+    let hasVoteable = false;
+    pIds.forEach(targetId => {
+      const ans = state.allAnswers[targetId]?.[cat] || '';
+      if (ans.trim().length > 0) hasVoteable = true;
+    });
+
+    const initialResolutions: Record<string, { result: VoteValue; points: number }> = {};
+    if (!hasVoteable) {
+      pIds.forEach(targetId => {
+        initialResolutions[targetId] = { result: 'invalid', points: 0 };
+      });
+    }
+
     const newState: StopGameState = {
       ...state,
       phase: 'REVIEWING',
       currentReviewCategoryIndex: categoryIndex,
       categoryVotes: catVotes,
-      categoryResolutions: {},
+      categoryResolutions: hasVoteable ? {} : initialResolutions,
       isTieWarning: false,
     };
     applyState(newState);
@@ -139,7 +153,8 @@ export function useStopGameState() {
       cat,
       catIndex: categoryIndex,
       totalCats: state.selectedCats.length,
-      allAnswers: state.allAnswers
+      allAnswers: state.allAnswers,
+      autoResolutions: hasVoteable ? undefined : initialResolutions
     };
   };
 

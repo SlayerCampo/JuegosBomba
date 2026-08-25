@@ -240,7 +240,7 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
               currentReviewCategoryIndex: p.catIndex,
               allAnswers: p.allAnswers,
               categoryVotes: {},
-              categoryResolutions: {},
+              categoryResolutions: p.autoResolutions || {},
               isTieWarning: false
             });
             navigate('stop-review');
