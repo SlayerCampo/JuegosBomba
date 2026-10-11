@@ -160,7 +160,9 @@ export function StopReviewView() {
                      <div className="p-4">
                         {resolution ? (
                           <div className="flex items-center justify-center gap-2 font-black text-xl animate-pop-in py-2">
-                             {resolution.result === 'valid' && <span className="text-green-500">✅ Válida <span className="ml-2 px-3 py-1 bg-green-500/10 rounded-xl">+100</span></span>}
+                             {resolution.reason === 'letter-incorrect' && <span className="text-red-500">❌ Letra incorrecta <span className="ml-2 px-3 py-1 bg-red-500/10 rounded-xl">+0</span></span>}
+                             {resolution.reason === 'empty' && <span className="text-red-500">❌ Vacía <span className="ml-2 px-3 py-1 bg-red-500/10 rounded-xl">+0</span></span>}
+                             {!resolution.reason && resolution.result === 'valid' && <span className="text-green-500">✅ Válida <span className="ml-2 px-3 py-1 bg-green-500/10 rounded-xl">+100</span></span>}
                              {resolution.result === 'repeated' && <span className="text-blue-500">🔁 Repetida <span className="ml-2 px-3 py-1 bg-blue-500/10 rounded-xl">+50</span></span>}
                              {resolution.result === 'invalid' && <span className="text-red-500">❌ Inválida <span className="ml-2 px-3 py-1 bg-red-500/10 rounded-xl">+0</span></span>}
                           </div>

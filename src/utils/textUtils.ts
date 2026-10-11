@@ -10,6 +10,20 @@ export function normalizeText(text: string): string {
     .toLowerCase();
 }
 
+export function startsWithLetter(value: string, letter: string): boolean {
+  const normalizedValue = normalizeText(value);
+  const normalizedLetter = normalizeText(letter);
+  return normalizedLetter.length > 0 && normalizedValue.startsWith(normalizedLetter);
+}
+
+export function sanitizeUserText(value: string, maxLength = 40): string {
+  return value
+    .replace(/\p{Cc}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
 export function escapeHTML(text: string): string {
   const map: Record<string, string> = {
     '&': '&amp;',

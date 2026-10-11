@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent } from 'react';
 import { EmojiSelector } from '@/components/common/EmojiSelector';
 import { EMOJIS, type Emoji } from '@/types/player';
-import { escapeHTML } from '@/utils/textUtils';
+import { sanitizeUserText } from '@/utils/textUtils';
 
 interface ProfileSetupProps {
   initialName?: string;
@@ -34,7 +34,7 @@ export function ProfileSetup({
       setError('¡Escribe tu nombre!');
       return;
     }
-    onConfirm(escapeHTML(trimmed), emoji);
+    onConfirm(sanitizeUserText(trimmed, 18), emoji);
   };
 
   return (

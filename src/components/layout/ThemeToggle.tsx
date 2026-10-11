@@ -9,7 +9,7 @@ export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
       onClick={onToggle}
       aria-label="Cambiar tema"
       title="Modo oscuro / claro"
-      className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full flex items-center justify-center text-lg
+      className="fixed top-4 right-4 z-50 w-11 h-11 rounded-full flex items-center justify-center text-lg
                  transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer
                  border"
       style={{

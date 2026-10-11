@@ -9,6 +9,7 @@ import type {
   VoteValue
 } from '@/types/stop';
 import type { StopPlayer, PlayerMap, PlayerId } from '@/types/player';
+import { sanitizeUserText, startsWithLetter } from '@/utils/textUtils';
 
 export function useStopGameState() {
   const [gameState, setGameState] = useState<StopGameState | null>(null);
@@ -90,8 +91,14 @@ export function useStopGameState() {
     const state = stateRef.current;
     if (!state) return null;
 
+    const sanitizedAnswers = Object.fromEntries(
+      state.selectedCats.map((category) => {
+        const answer = sanitizeUserText(answers[category] || '');
+        return [category, answer];
+      }),
+    );
     const allAnswers = { ...state.allAnswers };
-    allAnswers[senderId] = answers;
+    allAnswers[senderId] = sanitizedAnswers;
     
     submittedAnswersRef.current.add(senderId);
 
@@ -105,6 +112,18 @@ export function useStopGameState() {
     }
     
     return null;
+  };
+
+  const hostValidateAnswers = (
+    playerId: string,
+    answers: Record<CategoryKey, string>,
+  ): boolean => {
+    const state = stateRef.current;
+    if (!state || !state.players[playerId]) return false;
+    return state.selectedCats.every((category) => {
+      const answer = (answers[category] || '').trim();
+      return answer.length > 0 && startsWithLetter(answer, state.currentLetter);
+    });
   };
 
   const hostStartReview = (categoryIndex: number = 0): StopReviewCategoryPayload | null => {
@@ -132,10 +151,10 @@ export function useStopGameState() {
       if (ans.trim().length > 0) hasVoteable = true;
     });
 
-    const initialResolutions: Record<string, { result: VoteValue; points: number }> = {};
+    const initialResolutions: Record<string, { result: VoteValue; points: number; reason?: 'empty' | 'letter-incorrect' }> = {};
     if (!hasVoteable) {
       pIds.forEach(targetId => {
-        initialResolutions[targetId] = { result: 'invalid', points: 0 };
+        initialResolutions[targetId] = { result: 'invalid', points: 0, reason: 'empty' };
       });
     }
 
@@ -200,7 +219,7 @@ export function useStopGameState() {
     if (!state || state.phase !== 'REVIEWING') return null;
 
     let hasTie = false;
-    const resolution: Record<string, { result: VoteValue; points: number }> = {};
+    const resolution: Record<string, { result: VoteValue; points: number; reason?: 'empty' | 'letter-incorrect' }> = {};
     const pIds = Object.keys(state.players);
 
     const currentCat = state.selectedCats[state.currentReviewCategoryIndex];
@@ -208,7 +227,11 @@ export function useStopGameState() {
     pIds.forEach(targetId => {
       const isEmpty = (state.allAnswers[targetId]?.[currentCat] || '').trim().length === 0;
       if (isEmpty) {
-        resolution[targetId] = { result: 'invalid', points: 0 };
+        resolution[targetId] = { result: 'invalid', points: 0, reason: 'empty' };
+        return;
+      }
+      if (!startsWithLetter(state.allAnswers[targetId]?.[currentCat] || '', state.currentLetter)) {
+        resolution[targetId] = { result: 'invalid', points: 0, reason: 'letter-incorrect' };
         return;
       }
 
@@ -326,6 +349,7 @@ export function useStopGameState() {
     hostReceiveVote,
     hostResolveVotes,
     hostNextCategoryOrResults,
+    hostValidateAnswers,
     resolutionsRef,
     handlePlayerDisconnect,
   };

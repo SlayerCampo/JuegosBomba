@@ -65,7 +65,11 @@ export interface StopGameState {
   allAnswers: Record<string, Record<CategoryKey, string>>; // playerId -> category -> word
   currentReviewCategoryIndex: number;
   categoryVotes: Record<string, Record<string, VoteValue>>; // voterId -> targetId -> vote
-  categoryResolutions?: Record<string, { result: VoteValue; points: number }>; // targetId -> result
+  categoryResolutions?: Record<string, {
+    result: VoteValue;
+    points: number;
+    reason?: 'empty' | 'letter-incorrect';
+  }>; // targetId -> result
   isTieWarning: boolean;
   
   // Round Results Phase
@@ -96,6 +100,12 @@ export interface StopRoundResultsPayload {
 // Payload for STOP trigger
 export interface StopTriggerPayload {
   triggeredBy: PlayerId | 'time';
+  answers?: Record<CategoryKey, string>;
+}
+
+export interface StopAwayNoticePayload {
+  playerId: PlayerId;
+  seconds: number;
 }
 
 export interface StopSubmitAnswersPayload {

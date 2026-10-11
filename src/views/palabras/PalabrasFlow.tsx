@@ -52,12 +52,13 @@ import type {
 } from '@/types/palabras';
 import type { PlayerProfile, PalabrasPlayer, PlayerMap } from '@/types/player';
 import { NetworkProvider, useNetwork } from '@/context/NetworkContext';
+import { DictionaryProvider, useDictionaryContext } from '@/context/DictionaryContext';
+import { ErrorCard } from '@/components/common/ErrorCard';
 import {
   usePalabrasGameState,
   TRANSITION_OUT_MS,
 } from '@/hooks/usePalabrasGameState';
 import { useAppContext }  from '@/context/AppContext';
-import { useDictionary }  from '@/hooks/useDictionary';
 import { normalizeText }  from '@/utils/textUtils';
 
 // Views
@@ -136,7 +137,7 @@ interface PalabrasFlowProps {
 export function PalabrasFlowInner({ view, handlerRef }: PalabrasFlowProps) {
   const { navigate }           = useAppContext();
   const { isHost, send, myId } = useNetwork();
-  const { availableLetters, checkWord, markWordUsed, clearUsedWords } = useDictionary();
+  const { availableLetters, checkWord, markWordUsed, clearUsedWords, status, progress, error, retry } = useDictionaryContext();
 
   const [gameMode,       setGameMode]       = useState<GameMode | null>(null);
   const [targetRoomCode, setTargetRoomCode] = useState<string | null>(null);
@@ -181,7 +182,7 @@ export function PalabrasFlowInner({ view, handlerRef }: PalabrasFlowProps) {
 
   // ── HOST: Start game ──────────────────────────────────────────────
   const startGameAsHost = useCallback((mode: GameMode, lm: LetterMode) => {
-    if (!isHost) return;
+    if (!isHost || status !== 'ready') return;
     clearUsedWords();
 
     const players: PlayerMap<PalabrasPlayer> = {};
@@ -192,7 +193,7 @@ export function PalabrasFlowInner({ view, handlerRef }: PalabrasFlowProps) {
     const startPayload = initGameAsHost(mode, lm, players, availableLetters);
     send('START_GAME', startPayload);
     navigate('palabras-countdown');
-  }, [isHost, lobbyPlayers, availableLetters, initGameAsHost, send, navigate, clearUsedWords]);
+  }, [isHost, status, lobbyPlayers, availableLetters, initGameAsHost, send, navigate, clearUsedWords]);
 
   // ── In-turn actions ───────────────────────────────────────────────
 
@@ -309,7 +310,7 @@ export function PalabrasFlowInner({ view, handlerRef }: PalabrasFlowProps) {
         const normalized = normalizeText(word);
         const required   = normalizeText(state.currentLetter);
 
-        if (!normalized.startsWith(required) || !checkWord(normalized)) {
+        if (!normalized.startsWith(required) || !checkWord(normalized).valid) {
           const next = hostProcessTimeout(availableLetters);
           if (next) broadcastResult(next, 'BOOM');
           break;
@@ -460,7 +461,18 @@ export function PalabrasFlowInner({ view, handlerRef }: PalabrasFlowProps) {
 
   return (
     <PalabrasFlowContext.Provider value={contextValue}>
-      {renderView()}
+      {status !== 'ready' && error ? (
+        <ErrorCard message="No se pudo cargar el diccionario" onRetry={retry} />
+      ) : (
+        <>
+          {status === 'loading' && (
+            <p className="mb-4 text-center text-sm font-bold text-[var(--color-text-muted)]">
+              Cargando diccionario... {Math.round(progress * 100)}%
+            </p>
+          )}
+          {renderView()}
+        </>
+      )}
     </PalabrasFlowContext.Provider>
   );
 }
@@ -477,7 +489,9 @@ export function PalabrasFlow({ view }: { view: AppView }) {
 
   return (
     <NetworkProvider onMessage={stableOnMessage}>
-      <PalabrasFlowInner view={view} handlerRef={handlerRef} />
+      <DictionaryProvider>
+        <PalabrasFlowInner view={view} handlerRef={handlerRef} />
+      </DictionaryProvider>
     </NetworkProvider>
   );
 }

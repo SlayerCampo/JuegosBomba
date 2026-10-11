@@ -8,6 +8,7 @@
  *
  * Messages OUT (to main thread):
  *   { type: 'CHUNK', words: string[] }            → batch of normalized words
+ *   { type: 'PROGRESS', loaded, total }         → loading progress
  *   { type: 'LOADED', size, letters }             → loading complete
  *   { type: 'LOAD_ERROR', error }                 → load failed
  *   { type: 'CHECK_RESULT', word, valid }         → result of single word check
@@ -26,8 +27,13 @@ function normalizeText(text: string): string {
 }
 
 async function loadDictionary(sendChunks: boolean): Promise<void> {
-  const response = await fetch('/index.json');
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const cache = await caches.open('juegos-bomba-dictionary-v1');
+  let response = await cache.match('/index.json');
+  if (!response) {
+    response = await fetch('/index.json');
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    await cache.put('/index.json', response.clone());
+  }
   const words: string[] = (await response.json()) as string[];
 
   dictionary = new Set<string>();
@@ -46,6 +52,9 @@ async function loadDictionary(sendChunks: boolean): Promise<void> {
       if (chunkBuffer.length >= CHUNK_SIZE) {
         self.postMessage({ type: 'CHUNK', words: [...chunkBuffer] });
         chunkBuffer.length = 0;
+      }
+      if (dictionary.size % 50000 === 0) {
+        self.postMessage({ type: 'PROGRESS', loaded: dictionary.size, total: words.length });
       }
     }
   }

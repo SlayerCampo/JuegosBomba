@@ -6,6 +6,7 @@ import { AdInlineRectangle } from '@/components/common/AdBannerSlot';
 import { useStopFlow } from './StopFlow';
 import { STOP_CATEGORIES, type CategoryKey } from '@/types/stop';
 import type { PlayerProfile } from '@/types/player';
+import { sanitizeUserText } from '@/utils/textUtils';
 
 export function StopLobbyView() {
   const { 
@@ -215,7 +216,7 @@ export function StopLobbyView() {
                     onChange={e => setNewCustomCat(e.target.value)}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
-                        const trimmed = newCustomCat.trim();
+                        const trimmed = sanitizeUserText(newCustomCat, 15);
                         if (trimmed && !customCategories.includes(trimmed)) {
                           setCustomCategories([...customCategories, trimmed]);
                           setNewCustomCat('');
@@ -229,7 +230,7 @@ export function StopLobbyView() {
                   />
                   <button 
                     onClick={() => {
-                      const trimmed = newCustomCat.trim();
+                      const trimmed = sanitizeUserText(newCustomCat, 15);
                       if (trimmed && !customCategories.includes(trimmed)) {
                         setCustomCategories([...customCategories, trimmed]);
                         setNewCustomCat('');

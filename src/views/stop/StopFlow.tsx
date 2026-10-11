@@ -11,12 +11,14 @@ import type {
   StopVotePayload,
   StopSubmitAnswersPayload,
   StopTriggerPayload,
+  StopAwayNoticePayload,
   StopVotesSyncPayload
 } from '@/types/stop';
 import type { PlayerProfile, StopPlayer, PlayerMap } from '@/types/player';
 import { NetworkProvider, useNetwork } from '@/context/NetworkContext';
 import { useStopGameState } from '@/hooks/useStopGameState';
 import { useAppContext } from '@/context/AppContext';
+import { sanitizeUserText } from '@/utils/textUtils';
 
 // Views
 import { StopConfigView }    from './StopConfigView';
@@ -100,7 +102,8 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
     hostReceiveVote,
     hostNextCategoryOrResults,
     stateRef,
-    handlePlayerDisconnect
+    handlePlayerDisconnect,
+    hostValidateAnswers
   } = useStopGameState();
 
   const startGameAsHost = useCallback(() => {
@@ -148,9 +151,13 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
       case 'PROFILE_READY': {
         if (isHost) {
           const profile = msg.payload as PlayerProfile;
+          const sanitizedProfile: PlayerProfile = {
+            ...profile,
+            name: sanitizeUserText(profile.name, 18),
+          };
           console.log('[StopFlow] HOST: received PROFILE_READY from:', profile.id, profile.name);
           setLobbyPlayers(prev => {
-            const next = { ...prev, [profile.id]: profile };
+            const next = { ...prev, [sanitizedProfile.id]: sanitizedProfile };
             console.log('[StopFlow] HOST: broadcasting STOP_LOBBY_STATE, players:', next);
             send('STOP_LOBBY_STATE', next);
             return next;
@@ -193,18 +200,39 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
         break;
 
       case 'STOP_TRIGGER':
-        setStopTriggeredBy((msg.payload as StopTriggerPayload).triggeredBy);
         if (isHost) {
-          send('STOP_TRIGGER', msg.payload);
+          const trigger = msg.payload as StopTriggerPayload;
+          if (
+            trigger.triggeredBy !== 'time' &&
+            (!trigger.answers || !hostValidateAnswers(trigger.triggeredBy, trigger.answers))
+          ) {
+            send('STOP_TRIGGER_REJECTED', {}, trigger.triggeredBy);
+            break;
+          }
+          send('STOP_TRIGGER', trigger);
         }
+        setStopTriggeredBy((msg.payload as StopTriggerPayload).triggeredBy);
         // Do not navigate immediately, the overlay in StopGameView will handle this and then wait for host
         break;
 
+      case 'STOP_TRIGGER_REJECTED':
+        if (!isHost) {
+          setCheatMessage({
+            id: Date.now(),
+            text: 'Tus respuestas deben estar completas y comenzar con la letra de la ronda.',
+          });
+        }
+        break;
+
       case 'STOP_CHEAT_DETECTED': {
-        const cheatId = msg.payload as string;
+        const notice = msg.payload as StopAwayNoticePayload;
+        const cheatId = notice.playerId;
         // Si no está en players (ej. es host pero host no está en lobbyPlayers a veces, usamos un nombre por defecto)
         const playerName = lobbyPlayers[cheatId]?.name || (cheatId === 'host' ? myProfile?.name : 'Alguien');
-        setCheatMessage({ id: Date.now(), text: `¡🚨 ${playerName} se salió del juego a buscar respuestas!` });
+        setCheatMessage({
+          id: Date.now(),
+          text: `⚠️ ${playerName} estuvo fuera de la partida ${notice.seconds} segundos.`,
+        });
         break;
       }
 
@@ -357,7 +385,8 @@ function StopFlowInner({ view, handlerRef }: StopFlowProps) {
     }
   }, [
     isHost, send, navigate, applyState, 
-    hostReceiveAnswers, hostReceiveVote, stateRef
+    hostReceiveAnswers, hostReceiveVote, stateRef,
+    hostValidateAnswers, lobbyPlayers, myProfile, handlePlayerDisconnect
   ]);
 
   // Host Transitions

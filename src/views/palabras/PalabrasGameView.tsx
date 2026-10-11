@@ -55,7 +55,7 @@ import type { ChangeEvent, FormEvent } from 'react';
 import { useAppContext }   from '@/context/AppContext';
 import { usePalabrasFlow } from './PalabrasFlow';
 import { useNetwork }      from '@/context/NetworkContext';
-import { useDictionary }   from '@/hooks/useDictionary';
+import { useDictionaryContext } from '@/context/DictionaryContext';
 import { useGameTimer }    from '@/hooks/useGameTimer';
 import { normalizeText }   from '@/utils/textUtils';
 import type { TurnPhase, TurnResult } from '@/types/palabras';
@@ -120,7 +120,7 @@ export function PalabrasGameView() {
     declineMercy,
   } = usePalabrasFlow();
   const { myId }                               = useNetwork();
-  const { checkWord, isWordUsed, markWordUsed } = useDictionary();
+  const { checkWord, isWordUsed, markWordUsed } = useDictionaryContext();
   const timer                                  = useGameTimer();
 
   // ── Local UI state ─────────────────────────────────────────────
@@ -244,7 +244,7 @@ export function PalabrasGameView() {
     const isMiracleWord =
       word.length > 0 &&
       word.startsWith(required) &&
-      checkWord(word) &&
+      checkWord(word).valid &&
       !isWordUsed(word);
 
     if (isMiracleWord) {
@@ -302,7 +302,7 @@ export function PalabrasGameView() {
     if (!word)                    { setErrorMsg('Escribe una palabra.');                              return; }
     if (!word.startsWith(required)){ setErrorMsg(`¡Debe empezar con "${gameState.currentLetter}"!`); return; }
     if (isWordUsed(word))          { setErrorMsg('¡Esa palabra ya fue usada!');                       return; }
-    if (!checkWord(word))          { setErrorMsg('¡Esa palabra no existe en el diccionario!');        return; }
+    if (!checkWord(word).valid)    { setErrorMsg('¡Esa palabra no existe en el diccionario!');        return; }
 
     hasSubmittedRef.current = true;
     markWordUsed(word);

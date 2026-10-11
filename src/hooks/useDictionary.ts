@@ -15,26 +15,30 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { normalizeText } from '@/utils/textUtils';
 import DictionaryWorker from '@/utils/dictionary.worker.ts?worker';
 
+export type DictionaryStatus = 'idle' | 'loading' | 'ready' | 'error';
+
 type WorkerMessage =
   | { type: 'CHUNK'; words: string[] }
+  | { type: 'PROGRESS'; loaded: number; total: number }
   | { type: 'LOADED'; size: number; letters: string[] }
   | { type: 'LOAD_ERROR'; error: string };
 
 export interface UseDictionaryReturn {
-  isLoading: boolean;
-  isReady: boolean;
+  status: DictionaryStatus;
+  progress: number;
   error: string | null;
   availableLetters: string[];
   /** Synchronous O(1) lookup. Returns true while loading (lenient mode). */
-  checkWord: (word: string) => boolean;
+  checkWord: (word: string) => { valid: boolean; reason?: 'dictionary-unavailable' | 'not-found' };
   isWordUsed: (word: string) => boolean;
   markWordUsed: (word: string) => void;
   clearUsedWords: () => void;
+  retry: () => void;
 }
 
 export function useDictionary(): UseDictionaryReturn {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isReady, setIsReady] = useState(false);
+  const [status, setStatus] = useState<DictionaryStatus>('loading');
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [availableLetters, setAvailableLetters] = useState<string[]>([]);
 
@@ -42,9 +46,15 @@ export function useDictionary(): UseDictionaryReturn {
   const dictionaryRef = useRef<Set<string>>(new Set());
   // Per-session used words
   const usedWordsRef = useRef<Set<string>>(new Set());
+  const workerRef = useRef<Worker | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    workerRef.current?.terminate();
     const worker = new DictionaryWorker();
+    workerRef.current = worker;
+    setStatus('loading');
+    setProgress(0);
+    setError(null);
 
     worker.onmessage = (e: MessageEvent<WorkerMessage>) => {
       const msg = e.data;
@@ -56,44 +66,48 @@ export function useDictionary(): UseDictionaryReturn {
         }
         return;
       }
+      if (msg.type === 'PROGRESS') {
+        setProgress(msg.total > 0 ? msg.loaded / msg.total : 0);
+        return;
+      }
 
       if (msg.type === 'LOADED') {
         setAvailableLetters(msg.letters);
-        setIsLoading(false);
-        setIsReady(true);
+        setStatus('ready');
+        setProgress(1);
         console.log(`[Dictionary] Ready — ${msg.size.toLocaleString()} words.`);
         return;
       }
 
       if (msg.type === 'LOAD_ERROR') {
         setError(msg.error);
-        setIsLoading(false);
+        setStatus('error');
         console.error('[Dictionary] Load error:', msg.error);
       }
     };
 
     worker.onerror = (e) => {
       setError(e.message);
-      setIsLoading(false);
+      setStatus('error');
     };
 
-    // Start loading — worker will stream CHUNK messages then fire LOADED
     worker.postMessage({ type: 'LOAD_FULL' });
 
     return () => {
       worker.terminate();
+      if (workerRef.current === worker) workerRef.current = null;
     };
   }, []);
 
-  const checkWord = useCallback((word: string): boolean => {
-    // While loading: be lenient, let everything through
-    if (!isReady) return true;
+  useEffect(() => load(), [load]);
+
+  const checkWord = useCallback((word: string) => {
+    if (status !== 'ready') return { valid: false, reason: 'dictionary-unavailable' as const };
     const normalized = normalizeText(word);
-    return (
-      dictionaryRef.current.size === 0 ||
-      dictionaryRef.current.has(normalized)
-    );
-  }, [isReady]);
+    return dictionaryRef.current.has(normalized)
+      ? { valid: true }
+      : { valid: false, reason: 'not-found' as const };
+  }, [status]);
 
   const isWordUsed = useCallback((word: string): boolean => {
     return usedWordsRef.current.has(normalizeText(word));
@@ -108,13 +122,14 @@ export function useDictionary(): UseDictionaryReturn {
   }, []);
 
   return {
-    isLoading,
-    isReady,
+    status,
+    progress,
     error,
     availableLetters,
     checkWord,
     isWordUsed,
     markWordUsed,
     clearUsedWords,
+    retry: load,
   };
 }
