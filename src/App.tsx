@@ -23,26 +23,33 @@ export default function App() {
     setCurrentView(view);
   }, []);
 
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-
   useEffect(() => {
-    const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
-        setIsKeyboardOpen(true);
-      }
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const updateKeyboardOffset = () => {
+      const activeElement = document.activeElement;
+      const isTextField =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement;
+      const keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      const offset = isTextField && keyboardHeight > 120 ? keyboardHeight : 0;
+
+      document.documentElement.style.setProperty('--keyboard-offset', `${offset}px`);
     };
-    const handleFocusOut = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
-        setIsKeyboardOpen(false);
-      }
-    };
-    document.addEventListener('focusin', handleFocusIn);
-    document.addEventListener('focusout', handleFocusOut);
+
+    updateKeyboardOffset();
+    viewport.addEventListener('resize', updateKeyboardOffset);
+    viewport.addEventListener('scroll', updateKeyboardOffset);
+    document.addEventListener('focusin', updateKeyboardOffset);
+    document.addEventListener('focusout', updateKeyboardOffset);
+
     return () => {
-      document.removeEventListener('focusin', handleFocusIn);
-      document.removeEventListener('focusout', handleFocusOut);
+      viewport.removeEventListener('resize', updateKeyboardOffset);
+      viewport.removeEventListener('scroll', updateKeyboardOffset);
+      document.removeEventListener('focusin', updateKeyboardOffset);
+      document.removeEventListener('focusout', updateKeyboardOffset);
+      document.documentElement.style.removeProperty('--keyboard-offset');
     };
   }, []);
 
@@ -64,7 +71,7 @@ export default function App() {
 
           {/* ── Mobile banner ad — fixed at bottom, pushes content up ── */}
           {/* Only visible below lg breakpoint. 60px bar height reserves space. */}
-          <AdMobileLeaderboard isKeyboardOpen={isKeyboardOpen} />
+          <AdMobileLeaderboard />
 
           {/*
            * ── Page layout: Sidebar-Ad | Main content | Sidebar-Ad ──
@@ -76,10 +83,10 @@ export default function App() {
            * On small screens (< lg):
            *   • Sidebars are hidden (display:none via Tailwind hidden/lg:flex).
            *   • Main card takes full width up to max-w-md.
-           *   • Dynamic padding adds 60px to top or bottom depending on keyboard state.
+           *   • The fixed mobile ad has its own reserved bottom space.
            */}
           <div 
-            className={`min-h-screen w-full max-w-screen-2xl mx-auto flex flex-row justify-center lg:justify-between items-stretch px-4 md:px-8 transition-all duration-300 lg:pt-0 lg:pb-0 ${isKeyboardOpen ? 'pt-[60px] pb-0' : 'pb-[60px] pt-0'}`}
+            className="min-h-screen w-full max-w-screen-2xl mx-auto flex flex-row justify-center lg:justify-between items-stretch px-4 md:px-8"
           >
             {/* Left skyscraper — desktop only */}
             <div className="hidden lg:block w-[160px] flex-shrink-0">
@@ -90,7 +97,7 @@ export default function App() {
 
             {/* ── Central game area ── */}
             <main
-              className="flex-1 w-full max-w-md mx-auto flex flex-col pt-8 pb-[140px] lg:pb-12 min-h-[100dvh]"
+              className="flex-1 w-full max-w-md mx-auto flex flex-col pt-8 pb-[84px] lg:pb-12 min-h-[100dvh]"
             >
               {/* Top safe-center spacer */}
               <div className="flex-[1_1_auto] min-h-0 lg:min-h-[2rem]"></div>

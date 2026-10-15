@@ -39,6 +39,22 @@ Las pruebas E2E usan Playwright y levantan Vite automáticamente. Los reportes g
 - `DictionaryProvider` carga una sola instancia del diccionario de Palabras Bomba mediante Web Worker.
 - `useGameTimer` usa timestamps absolutos para que los clientes compartan el mismo límite.
 
+## Publicidad y teclado móvil
+
+La aplicación reserva un leaderboard móvil fijo de 320×50 en la parte inferior y
+skyscrapers de 160×600 en escritorio. El contenido principal puede desplazarse de
+forma independiente, por lo que el scroll no mueve el anuncio. Cuando un teclado
+nativo reduce el `visualViewport`, el banner se coloca justo encima del teclado
+mediante `visualViewport`; no se cambia a la parte superior de la página.
+
+Los rectángulos inline de 300×250 se usan solo en pantallas de espera,
+configuración y resultados, donde no interrumpen una ronda activa. Los componentes
+actuales son slots visuales: antes de producción hay que conectar el proveedor
+elegido y su `data-ad-slot`/script, respetando su política de tamaños, etiquetas y
+frecuencia. No se recomienda sustituir el teclado del sistema por uno virtual:
+rompe autocorrector y accesibilidad y no evita las restricciones de visibilidad
+del proveedor de anuncios.
+
 ## Red y compatibilidad
 
 El multiplayer actual es **P2P con señalización por Internet** mediante PeerJS y servidores STUN. Aunque los dispositivos pueden estar en la misma Wi-Fi, la aplicación no es una LAN completamente autónoma. Para funcionar sin Internet se requiere desplegar un PeerServer propio dentro de la red local o implementar señalización local.

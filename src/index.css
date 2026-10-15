@@ -104,6 +104,7 @@
 
 html {
   font-family: var(--font-main);
+  --keyboard-offset: 0px;
 }
 
 body {

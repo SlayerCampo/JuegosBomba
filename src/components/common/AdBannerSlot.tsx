@@ -38,16 +38,20 @@ export const AdSkyscraper = memo(function AdSkyscraper() {
  * Shown fixed at the bottom of the screen on mobile (below lg).
  * Hidden on wide screens.
  */
-export const AdMobileLeaderboard = memo(function AdMobileLeaderboard({ isKeyboardOpen }: { isKeyboardOpen?: boolean }) {
+export const AdMobileLeaderboard = memo(function AdMobileLeaderboard() {
   return (
     <div
-      className={`mobile-ad-banner lg:hidden fixed left-0 right-0 z-[999] flex items-center justify-center transition-all duration-300 ${isKeyboardOpen ? 'top-0' : 'bottom-0'}`}
+      className="mobile-ad-banner lg:hidden fixed left-0 right-0 bottom-0 z-[999] flex items-center justify-center"
+      role="complementary"
+      aria-label="Publicidad"
       style={{
-        height: '60px',
+        height: 'calc(60px + env(safe-area-inset-bottom))',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        bottom: 'calc(var(--keyboard-offset, 0px))',
         background: 'var(--color-bg-card)',
-        borderBottom: isKeyboardOpen ? '1px solid var(--color-border)' : 'none',
-        borderTop: !isKeyboardOpen ? '1px solid var(--color-border)' : 'none',
+        borderTop: '1px solid var(--color-border)',
         backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
       }}
     >
       <div
@@ -106,5 +110,26 @@ export const AdInlineRectangle = memo(function AdInlineRectangle() {
  * @deprecated Use the new layout-level ad components instead.
  */
 export const AdBannerSlot = memo(function AdBannerSlot() {
-  return null;
+  return (
+    <div className="w-full flex justify-center items-center my-2" role="complementary" aria-label="Publicidad">
+      <div
+        className="flex w-full max-w-[320px] items-center justify-center"
+        style={{
+          minHeight: '100px',
+          background: 'var(--color-bg-card)',
+          border: '2px dashed var(--color-border)',
+          borderRadius: '16px',
+          backdropFilter: 'blur(10px)',
+          opacity: 0.6,
+        }}
+      >
+        <span
+          className="text-xs uppercase tracking-widest font-bold"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          Ad · 320×100
+        </span>
+      </div>
+    </div>
+  );
 });
